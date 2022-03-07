@@ -150,4 +150,87 @@ $ git reset HEAD readme.txt
 - **小结**：
 >场景1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令git checkout -- file。  
 场景2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令git reset HEAD <file>，就回到了场景1，第二步按场景1操作。  
-场景3：已经提交了不合适的修改到版本库时，想要撤销本次提交，参考版本回退一节，不过前提是没有推送到远程库。
+场景3：已经提交了不合适的修改到版本库时，想要撤销本次提交，参考版本回退一节，不过前提是没有推送到远程库。  
+
+
+#### 2.2.5 删除文件
+一般情况下，我们通常直接在文件管理器中把没用的文件删了，或者用`rm`命令删了：
+```
+$ rm test.txt
+```
+这个时候，Git知道你删除了文件，因此，工作区和版本库就不一致了，`git status`命令会立刻告诉你哪些文件被删除了,现在你有两个选择，一是确实要从版本库中删除该文件，那就用命令`git rm`删掉，并且`git commit`：
+```
+$ git rm test.txt
+rm 'test.txt'
+```
+```
+$ git commit -m "remove test.txt"
+[master 05c2560] remove test.txt
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ delete mode 100644 test.txt
+```
+另一种情况是删错了，因为版本库里还有呢，所以可以很轻松地把误删的文件恢复到最新版本：
+```
+$ git checkout -- test.txt
+```
+**注意**：从来没有被添加到版本库就被删除的文件，是无法恢复的！
+
+## 3. 远程仓库
+### 3.1 添加远程仓库  
+GitHub提供免费的仓库托管服务，在注册账号后，建立本地Git仓库和远程Git仓库需要一些设置：
+- 第1步：创建SSH Key。打开Shell（Windows下打开Git Bash），创建SSH Key：
+```
+$ ssh-keygen -t rsa -C "youremail@example.com"
+```
+  你需要把邮件地址换成你自己的邮件地址，然后一路回车，使用默认值即可，由于这个Key也不是用于军事目的，所以也无需设置密码。  
+如果一切顺利的话，可以在用户主目录里找到`.ssh`目录，里面有`id_rsa`和`id_rsa.pub`两个文件，这两个就是`SSH Key`的秘钥对，`id_rsa`是私钥，不能泄露出去，`id_rsa.pub`是公钥，可以放心地告诉任何人。
+- 第2步：登陆GitHub，打开“Account settings”，“SSH Keys”页面：  
+  然后，点“Add SSH Key”，填上任意Title，在Key文本框里粘贴`id_rsa.pub`文件的内容：
+
+现在，我们需要在GitHub创建一个Git仓库，这里可以参阅GitHub提供的[帮助页面](https://docs.github.com/cn/get-started)。  
+在创建Github仓库以后，我们根据GitHub的提示，在本地的`learngit`仓库下运行命令：
+```
+$ git remote add origin https://github.com/PQball/StudyCode-Note.git
+```
+*注* 此处我更改了本地仓库的名称。   
+下一步，就可以把本地库的所有内容推送到远程库上：
+```
+$ git push -u origin master
+Enumerating objects: 25, done.
+Counting objects: 100% (25/25), done.
+Delta compression using up to 12 threads
+Compressing objects: 100% (20/20), done.
+Writing objects: 100% (25/25), 13.11 KiB | 4.37 MiB/s, done.
+Total 25 (delta 5), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (5/5), done.
+To https://github.com/PQball/StudyCode-Note.git
+ * [new branch]      master -> master
+branch 'master' set up to track 'origin/master'.
+```
+从现在起，只要本地提交，就可以通过命令：
+```
+$ git push origin master
+```
+当你第一次使用Git的clone或者push命令连接GitHub时，会得到一个警告：
+```
+The authenticity of host 'github.com (xx.xx.xx.xx)' can't be established.
+RSA key fingerprint is xx.xx.xx.xx.xx.
+Are you sure you want to continue connecting (yes/no)?
+```
+这是因为Git使用SSH连接，而SSH连接在第一次验证GitHub服务器的Key时，需要你确认GitHub的Key的指纹信息是否真的来自GitHub的服务器，输入yes回车即可。  
+### 3.2 删除远程库 
+如果添加的时候地址写错了，或者就是想删除远程库，可以用`git remote rm <name>`命令。使用前，建议先用`git remote -v`查看远程库信息:
+```
+$ git remote -v
+origin  git@github.com:michaelliao/learn-git.git (fetch)
+origin  git@github.com:michaelliao/learn-git.git (push)
+```
+然后，根据名字删除，比如删除`origin`：
+```
+$ git remote rm origin
+```
+### 3.3 从远程库克隆
+假如我们在Github上已经有一个远程仓库`gitskills`，下一步是用命令`git clone`克隆一个本地库：
+```
+$ git clone git@github.com:PQball/gitskills.git
+```
