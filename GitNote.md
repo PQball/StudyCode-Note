@@ -9,7 +9,7 @@ Git是目前世界上最先进的分布式版本控制系统，与此相对的�
 在Debian或Ubuntu Linux，通过一条`sudo apt-get install git`就可以直接完成Git的安装。  
 #### 1.1.2在Windows上安装Git  
 安装完成后，在开始菜单里找到“Git”->“Git Bash”，蹦出一个类似命令行窗口的东西
-![alt GitBash](GitNoteImage.png)
+![alt GitBash](GitNoteImage.png)  
 安装完成后，还需要输入user name和Email地址，在命令行输入  
 ```
 $ git config --global user.name "Your Name"
